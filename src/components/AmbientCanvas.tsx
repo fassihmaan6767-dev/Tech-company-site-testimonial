@@ -22,7 +22,7 @@ export default function AmbientCanvas() {
     window.addEventListener('resize', handleResize);
 
     // Particle nodes for subtle cybernetic mesh
-    const nodeCount = Math.min(Math.floor((width * height) / 22000), 55);
+    const nodeCount = Math.min(Math.floor((width * height) / 25000), 45);
     const nodes: Array<{
       x: number;
       y: number;
@@ -36,10 +36,10 @@ export default function AmbientCanvas() {
       nodes.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        radius: Math.random() * 1.5 + 1,
-        baseAlpha: Math.random() * 0.4 + 0.2,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 1.2 + 0.8,
+        baseAlpha: Math.random() * 0.25 + 0.1,
       });
     }
 
@@ -58,73 +58,56 @@ export default function AmbientCanvas() {
     let t = 0;
 
     const render = () => {
-      t += 0.008;
-      // Smooth mouse damping
-      mouseX += (targetMouseX - mouseX) * 0.05;
-      mouseY += (targetMouseY - mouseY) * 0.05;
+      t += 0.005;
+      mouseX += (targetMouseX - mouseX) * 0.04;
+      mouseY += (targetMouseY - mouseY) * 0.04;
 
       ctx.clearRect(0, 0, width, height);
 
-      // Ambient radial gradient orbs (Cyan & Violet)
+      // Apple Subtle Monochromatic Ambient Glow
       const grad1 = ctx.createRadialGradient(
-        width * 0.7 + Math.sin(t * 0.5) * 60,
-        height * 0.35 + Math.cos(t * 0.4) * 50,
+        width * 0.65 + Math.sin(t * 0.4) * 40,
+        height * 0.35 + Math.cos(t * 0.3) * 40,
         10,
-        width * 0.7,
+        width * 0.65,
         height * 0.35,
         width * 0.45
       );
-      grad1.addColorStop(0, 'rgba(6, 182, 212, 0.09)');
-      grad1.addColorStop(0.5, 'rgba(59, 130, 246, 0.04)');
-      grad1.addColorStop(1, 'rgba(7, 7, 9, 0)');
+      grad1.addColorStop(0, 'rgba(255, 255, 255, 0.03)');
+      grad1.addColorStop(0.6, 'rgba(255, 255, 255, 0.01)');
+      grad1.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad1;
-      ctx.fillRect(0, 0, width, height);
-
-      const grad2 = ctx.createRadialGradient(
-        width * 0.25 + Math.cos(t * 0.6) * 70,
-        height * 0.6 + Math.sin(t * 0.5) * 60,
-        10,
-        width * 0.25,
-        height * 0.6,
-        width * 0.4
-      );
-      grad2.addColorStop(0, 'rgba(139, 92, 246, 0.08)');
-      grad2.addColorStop(0.6, 'rgba(168, 85, 247, 0.03)');
-      grad2.addColorStop(1, 'rgba(7, 7, 9, 0)');
-      ctx.fillStyle = grad2;
       ctx.fillRect(0, 0, width, height);
 
       // Draw subtle interactive nodes & connection lines
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
 
-        // Move
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce
         if (node.x < 0 || node.x > width) node.vx *= -1;
         if (node.y < 0 || node.y > height) node.vy *= -1;
 
-        // Subtle mouse pull
+        // Subtle mouse interaction
         const dxM = mouseX - node.x;
         const dyM = mouseY - node.y;
         const distM = Math.sqrt(dxM * dxM + dyM * dyM);
-        if (distM < 180) {
-          node.x += (dxM / distM) * 0.3;
-          node.y += (dyM / distM) * 0.3;
+        if (distM < 160) {
+          node.x += (dxM / distM) * 0.25;
+          node.y += (dyM / distM) * 0.25;
         }
 
-        // Draw connections
+        // Connections
         for (let j = i + 1; j < nodes.length; j++) {
           const other = nodes[j];
           const dx = node.x - other.x;
           const dy = node.y - other.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 130) {
-            const alpha = (1 - dist / 130) * 0.12;
-            ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
+          if (dist < 120) {
+            const alpha = (1 - dist / 120) * 0.06;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
             ctx.lineWidth = 0.75;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
@@ -134,7 +117,7 @@ export default function AmbientCanvas() {
         }
 
         // Draw node
-        ctx.fillStyle = `rgba(165, 243, 252, ${node.baseAlpha})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${node.baseAlpha})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
         ctx.fill();

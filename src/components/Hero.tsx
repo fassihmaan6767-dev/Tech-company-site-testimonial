@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ArrowDownRight, Sparkles } from 'lucide-react';
+import { ArrowDownRight } from 'lucide-react';
 
 interface HeroProps {
   onStartProject: () => void;
@@ -30,23 +30,23 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
 
     // Set initial states
     gsap.set(words, { y: '120%', opacity: 0 });
-    gsap.set(subheadRef.current, { y: 25, opacity: 0 });
-    gsap.set(ctaGroupRef.current, { y: 25, opacity: 0 });
-    gsap.set(statsRef.current, { y: 30, opacity: 0 });
-    gsap.set(shapeRef.current, { scale: 0.8, opacity: 0 });
+    gsap.set(subheadRef.current, { y: 20, opacity: 0 });
+    gsap.set(ctaGroupRef.current, { y: 20, opacity: 0 });
+    gsap.set(statsRef.current, { y: 25, opacity: 0 });
+    gsap.set(shapeRef.current, { scale: 0.85, opacity: 0 });
 
     tl.to(words, {
       y: '0%',
       opacity: 1,
       duration: 1.1,
-      stagger: 0.07,
+      stagger: 0.06,
     })
       .to(
         subheadRef.current,
         {
           y: 0,
           opacity: 1,
-          duration: 0.9,
+          duration: 0.8,
         },
         '-=0.7'
       )
@@ -55,7 +55,7 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
         {
           y: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: 0.7,
         },
         '-=0.6'
       )
@@ -64,26 +64,26 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
         {
           scale: 1,
           opacity: 1,
-          duration: 1.4,
+          duration: 1.2,
           ease: 'power2.out',
         },
-        '-=0.9'
+        '-=0.8'
       )
       .to(
         statsRef.current,
         {
           y: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: 0.7,
         },
-        '-=0.6'
+        '-=0.5'
       );
 
     // Continuous subtle floating animation for abstract shape
     gsap.to(shapeRef.current, {
-      y: '+=25',
-      rotation: 6,
-      duration: 5,
+      y: '+=20',
+      rotation: 4,
+      duration: 6,
       ease: 'sine.inOut',
       repeat: -1,
       yoyo: true,
@@ -100,8 +100,8 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
       const y = e.clientY - (rect.top + rect.height / 2);
 
       gsap.to(el, {
-        x: x * 0.35,
-        y: y * 0.35,
+        x: x * 0.3,
+        y: y * 0.3,
         duration: 0.3,
         ease: 'power2.out',
       });
@@ -140,32 +140,32 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[92vh] flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden"
+      className="relative min-h-[90vh] flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 max-w-6xl mx-auto overflow-hidden"
     >
-      {/* 3D Floating Abstract Visual Element */}
+      {/* 3D Floating Apple-Style Monochromatic Kinetic Gyroscope */}
       <div
         ref={shapeRef}
-        className="absolute right-0 top-1/4 -z-10 w-[320px] sm:w-[460px] md:w-[580px] h-[320px] sm:h-[460px] md:h-[580px] pointer-events-none select-none opacity-90"
+        className="absolute right-0 top-1/4 -z-10 w-[300px] sm:w-[440px] md:w-[540px] h-[300px] sm:h-[440px] md:h-[540px] pointer-events-none select-none opacity-80"
         aria-hidden="true"
       >
         <div className="relative w-full h-full flex items-center justify-center">
-          {/* Animated Glowing Radial Halo */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 via-sky-500/15 to-violet-600/25 rounded-full blur-3xl" />
+          {/* Subtle soft white ambient glow */}
+          <div className="absolute inset-0 bg-white/[0.03] rounded-full blur-3xl" />
 
-          {/* SVG Complex Geometric Kinetic Torus / Gyroscope */}
+          {/* SVG Monochromatic Geometric Kinetic Gyroscope */}
           <svg
             viewBox="0 0 500 500"
-            className="w-full h-full animate-[spin_24s_linear_infinite] drop-shadow-[0_0_30px_rgba(6,182,212,0.35)]"
+            className="w-full h-full animate-[spin_32s_linear_infinite]"
           >
             <defs>
-              <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.7" />
+              <linearGradient id="appleMonoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+                <stop offset="50%" stopColor="#d4d4d8" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#71717a" stopOpacity="0.1" />
               </linearGradient>
-              <linearGradient id="cyberGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.3" />
+              <linearGradient id="appleMonoGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#27272a" stopOpacity="0.1" />
               </linearGradient>
             </defs>
 
@@ -176,19 +176,19 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
               rx="180"
               ry="75"
               fill="none"
-              stroke="url(#cyberGrad1)"
+              stroke="url(#appleMonoGrad1)"
               strokeWidth="1.5"
-              strokeDasharray="8 6"
+              strokeDasharray="6 6"
               transform="rotate(25 250 250)"
             />
             <ellipse
               cx="250"
               cy="250"
-              rx="195"
+              rx="200"
               ry="85"
               fill="none"
-              stroke="url(#cyberGrad2)"
-              strokeWidth="2"
+              stroke="url(#appleMonoGrad2)"
+              strokeWidth="1.5"
               transform="rotate(-40 250 250)"
             />
             <ellipse
@@ -197,31 +197,31 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
               rx="160"
               ry="160"
               fill="none"
-              stroke="rgba(255,255,255,0.08)"
+              stroke="rgba(255,255,255,0.06)"
               strokeWidth="1"
             />
             <ellipse
               cx="250"
               cy="250"
-              rx="215"
-              ry="105"
+              rx="220"
+              ry="110"
               fill="none"
-              stroke="url(#cyberGrad1)"
-              strokeWidth="1.5"
+              stroke="url(#appleMonoGrad1)"
+              strokeWidth="1"
               transform="rotate(65 250 250)"
             />
 
             {/* Center Core Node */}
-            <circle cx="250" cy="250" r="14" fill="#06b6d4" className="animate-pulse" />
-            <circle cx="250" cy="250" r="32" fill="none" stroke="rgba(6,182,212,0.4)" strokeWidth="1" />
+            <circle cx="250" cy="250" r="10" fill="#ffffff" />
+            <circle cx="250" cy="250" r="28" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
           </svg>
         </div>
       </div>
 
-      {/* Hero Badge Tagline */}
-      <div className="inline-flex items-center gap-2 mb-6 text-xs font-mono text-cyan-400">
-        <Sparkles className="h-3.5 w-3.5" />
-        <span className="uppercase tracking-widest">Next-Generation Web Engineering & UI/UX</span>
+      {/* Hero Subtitle Tag */}
+      <div className="inline-flex items-center gap-2 mb-6 text-xs font-mono text-neutral-400">
+        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="uppercase tracking-widest">Digital Experience & Web Engineering</span>
       </div>
 
       {/* Main Headline with Split Word Reveal */}
@@ -232,11 +232,11 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
         {headlineWords.map((word, index) => {
           const isHighlight = word.toLowerCase().includes('convert') || word.toLowerCase().includes('digital');
           return (
-            <span key={index} className="inline-block overflow-hidden mr-[0.28em] align-top py-1">
+            <span key={index} className="inline-block overflow-hidden mr-[0.26em] align-top py-1">
               <span
                 className={`hero-word inline-block ${
                   isHighlight
-                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400'
+                    ? 'text-transparent bg-clip-text bg-gradient-to-b from-white via-neutral-100 to-neutral-400'
                     : 'text-white'
                 }`}
               >
@@ -250,19 +250,18 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
       {/* Subheadline */}
       <p
         ref={subheadRef}
-        className="text-base sm:text-xl md:text-2xl text-slate-300 max-w-2xl font-light leading-relaxed mb-10"
+        className="text-base sm:text-xl md:text-2xl text-neutral-400 max-w-2xl font-light leading-relaxed mb-10"
       >
         We architect high-performance websites, reactive 3D interfaces, and fluid digital products that captivate users and scale business revenue.
       </p>
 
-      {/* Magnetic Action Buttons */}
-      <div ref={ctaGroupRef} className="flex flex-wrap items-center gap-5 mb-16">
-        {/* Button 1: Start a Project (Magnetic) */}
+      {/* Apple-Style Action Buttons */}
+      <div ref={ctaGroupRef} className="flex flex-wrap items-center gap-4 mb-16">
+        {/* Button 1: Start a Project - Apple White Pill */}
         <button
           ref={btn1Ref}
           onClick={onStartProject}
-          data-cursor-text="START"
-          className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-semibold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-cyan-400 via-cyan-300 to-sky-400 rounded-full hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-shadow duration-300 group"
+          className="relative inline-flex items-center justify-center px-7 py-3.5 text-xs font-medium text-black bg-white rounded-full hover:bg-neutral-200 transition-colors shadow-sm group active:scale-95"
         >
           <span className="relative z-10 flex items-center gap-2">
             Start a Project
@@ -270,45 +269,44 @@ export default function Hero({ onStartProject, isReady }: HeroProps) {
           </span>
         </button>
 
-        {/* Button 2: View Our Work (Magnetic) */}
+        {/* Button 2: View Our Work - Apple Frosted Translucent Pill */}
         <a
           ref={btn2Ref}
           href="#work"
-          data-cursor-text="WORK"
-          className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-semibold uppercase tracking-wider text-white border border-white/20 rounded-full hover:border-cyan-400/80 hover:bg-white/5 transition-all duration-300"
+          className="relative inline-flex items-center justify-center px-7 py-3.5 text-xs font-medium text-white bg-white/[0.06] border border-white/[0.12] rounded-full hover:bg-white/[0.12] transition-colors"
         >
           <span>View Our Work</span>
         </a>
       </div>
 
-      {/* Claim-to-Proof Quantitative Adjacency */}
+      {/* Quantitative Proof Section */}
       <div
         ref={statsRef}
-        className="pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 text-left"
+        className="pt-8 border-t border-white/[0.08] grid grid-cols-2 md:grid-cols-4 gap-6 text-left"
       >
         <div>
           <div className="font-mono text-2xl sm:text-3xl font-bold text-white tabular-nums">
-            +184<span className="text-cyan-400">%</span>
+            +184%
           </div>
-          <div className="text-xs text-slate-400 mt-1">Average Conversion Lift</div>
+          <div className="text-xs text-neutral-500 mt-1">Average Conversion Lift</div>
         </div>
         <div>
           <div className="font-mono text-2xl sm:text-3xl font-bold text-white tabular-nums">
-            &lt; 0.7<span className="text-cyan-400">s</span>
+            &lt; 0.7s
           </div>
-          <div className="text-xs text-slate-400 mt-1">Lighthouse LCP Speed</div>
+          <div className="text-xs text-neutral-500 mt-1">Lighthouse LCP Speed</div>
         </div>
         <div>
           <div className="font-mono text-2xl sm:text-3xl font-bold text-white tabular-nums">
-            $140<span className="text-violet-400">M+</span>
+            $140M+
           </div>
-          <div className="text-xs text-slate-400 mt-1">Client Revenue Generated</div>
+          <div className="text-xs text-neutral-500 mt-1">Client Revenue Generated</div>
         </div>
         <div>
           <div className="font-mono text-2xl sm:text-3xl font-bold text-white tabular-nums">
-            100<span className="text-cyan-400">%</span>
+            100%
           </div>
-          <div className="text-xs text-slate-400 mt-1">On-Time Delivery Rate</div>
+          <div className="text-xs text-neutral-500 mt-1">On-Time Delivery Rate</div>
         </div>
       </div>
     </section>

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Code2, Compass, Cpu, Gauge, ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { Code2, Compass, Cpu, Gauge, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Service } from '../types';
+import AnimatedModal from './AnimatedModal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -106,10 +107,10 @@ export default function Services({ onSelectService }: ServicesProps) {
           trigger: cardsContainerRef.current,
           start: 'top 80%',
         },
-        y: 60,
+        y: 50,
         opacity: 0,
-        duration: 0.9,
-        stagger: 0.15,
+        duration: 0.8,
+        stagger: 0.12,
         ease: 'power3.out',
       });
     }, section);
@@ -126,8 +127,8 @@ export default function Services({ onSelectService }: ServicesProps) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -7;
-    const rotateY = ((x - centerX) / centerX) * 7;
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
 
     gsap.to(card, {
       transformPerspective: 1000,
@@ -137,10 +138,10 @@ export default function Services({ onSelectService }: ServicesProps) {
       ease: 'power2.out',
     });
 
-    // Update dynamic specular glare
+    // Dynamic specular glare - Apple white
     const glare = card.querySelector('.card-glare') as HTMLElement | null;
     if (glare) {
-      glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(6, 182, 212, 0.14) 0%, transparent 60%)`;
+      glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.08) 0%, transparent 60%)`;
     }
   };
 
@@ -163,14 +164,14 @@ export default function Services({ onSelectService }: ServicesProps) {
   const getIcon = (name: string) => {
     switch (name) {
       case 'code':
-        return <Code2 className="h-6 w-6 text-cyan-400" />;
+        return <Code2 className="h-5 w-5 text-white" />;
       case 'compass':
-        return <Compass className="h-6 w-6 text-sky-400" />;
+        return <Compass className="h-5 w-5 text-white" />;
       case 'cpu':
-        return <Cpu className="h-6 w-6 text-violet-400" />;
+        return <Cpu className="h-5 w-5 text-white" />;
       case 'gauge':
       default:
-        return <Gauge className="h-6 w-6 text-emerald-400" />;
+        return <Gauge className="h-5 w-5 text-white" />;
     }
   };
 
@@ -178,25 +179,25 @@ export default function Services({ onSelectService }: ServicesProps) {
     <section
       id="services"
       ref={sectionRef}
-      className="relative py-28 px-6 md:px-12 max-w-7xl mx-auto"
+      className="relative py-28 px-6 md:px-12 max-w-6xl mx-auto"
     >
       {/* Section Header */}
-      <div ref={headerRef} className="max-w-3xl mb-16">
-        <div className="text-xs font-mono uppercase tracking-widest text-cyan-400 mb-3">
+      <div ref={headerRef} className="max-w-2xl mb-16">
+        <div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-3">
           Specialized Disciplines
         </div>
-        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
           Architected for Speed, Conversion, and Enduring Brand Equity.
         </h2>
-        <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed">
+        <p className="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
           We combine cutting-edge frontend engineering with spatial design rigor. Every interface is handcrafted to deliver measurable business performance.
         </p>
       </div>
 
-      {/* Services Grid with 3D Tilt and Stagger */}
+      {/* Services Grid with 3D Tilt and Apple Black & White Style */}
       <div
         ref={cardsContainerRef}
-        className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8"
       >
         {SERVICES.map((service) => (
           <div
@@ -205,7 +206,7 @@ export default function Services({ onSelectService }: ServicesProps) {
             onMouseLeave={handleCardMouseLeave}
             onClick={() => setActiveModalService(service)}
             data-cursor-text="EXPAND"
-            className="service-card group relative p-8 sm:p-10 rounded-2xl bg-[#0e0e14] border border-white/10 hover:border-cyan-500/50 transition-colors duration-300 cursor-pointer overflow-hidden transform-gpu flex flex-col justify-between"
+            className="service-card group relative p-8 sm:p-10 rounded-2xl bg-neutral-900/40 border border-white/[0.08] hover:border-white/30 transition-colors duration-300 cursor-pointer overflow-hidden transform-gpu flex flex-col justify-between"
           >
             {/* Dynamic specular glare overlay */}
             <div className="card-glare absolute inset-0 pointer-events-none transition-opacity duration-200" />
@@ -214,70 +215,60 @@ export default function Services({ onSelectService }: ServicesProps) {
               {/* Card Header */}
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-cyan-400/40 transition-colors duration-200">
+                  <div className="p-2.5 rounded-xl bg-white/[0.06] border border-white/10 group-hover:border-white/30 transition-colors duration-200">
                     {getIcon(service.iconName)}
                   </div>
-                  <span className="font-mono text-sm font-semibold text-slate-500 tracking-wider">
+                  <span className="font-mono text-xs font-semibold text-neutral-500 tracking-wider">
                     {service.number}
                   </span>
                 </div>
 
                 {/* Highlight Metric */}
-                <span className="font-mono text-xs font-medium text-cyan-400/90 tracking-wide tabular-nums">
+                <span className="font-mono text-xs font-medium text-neutral-300 tracking-wide tabular-nums">
                   {service.highlightMetric}
                 </span>
               </div>
 
               {/* Title & Short Description */}
-              <h3 className="font-display text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-200">
+              <h3 className="font-display text-2xl font-bold text-white mb-3 group-hover:text-neutral-200 transition-colors duration-200">
                 {service.title}
               </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-6 font-light">
+              <p className="text-neutral-400 text-sm leading-relaxed mb-6 font-light">
                 {service.shortDesc}
               </p>
 
               {/* Tech Stack Unboxed Metadata */}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 mb-8 font-mono">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-500 mb-8 font-mono">
                 {service.tools.map((tool, idx) => (
                   <span key={tool} className="flex items-center gap-3">
                     <span>{tool}</span>
-                    {idx < service.tools.length - 1 && <span className="text-slate-700">·</span>}
+                    {idx < service.tools.length - 1 && <span className="text-neutral-700">·</span>}
                   </span>
                 ))}
               </div>
             </div>
 
             {/* Bottom Action Affordance */}
-            <div className="pt-6 border-t border-white/5 flex items-center justify-between text-xs font-medium text-slate-400 group-hover:text-white transition-colors">
-              <span className="font-mono uppercase tracking-wider">Explore Capabilities</span>
-              <div className="flex items-center gap-1 text-cyan-400 group-hover:translate-x-1 transition-transform duration-200">
-                <ArrowRight className="h-4 w-4" />
+            <div className="pt-6 border-t border-white/[0.06] flex items-center justify-between text-xs font-medium text-neutral-400 group-hover:text-white transition-colors">
+              <span className="font-mono uppercase tracking-wider text-[11px]">Explore Capabilities</span>
+              <div className="flex items-center gap-1 text-white group-hover:translate-x-1 transition-transform duration-200">
+                <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Service Detail Modal */}
-      {activeModalService && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setActiveModalService(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl bg-[#0c0c12] border border-white/15 rounded-2xl p-6 sm:p-10 shadow-2xl text-left"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setActiveModalService(null)}
-              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
-              aria-label="Close details"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
+      {/* Service Detail Modal with Fluid Open & Close Animation */}
+      <AnimatedModal
+        isOpen={!!activeModalService}
+        onClose={() => setActiveModalService(null)}
+        maxWidth="max-w-2xl"
+      >
+        {activeModalService && (
+          <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="font-mono text-xs text-cyan-400 tracking-wider">
+              <span className="font-mono text-xs text-neutral-400 tracking-wider">
                 {activeModalService.number} / SERVICE SPECIFICATION
               </span>
             </div>
@@ -286,18 +277,18 @@ export default function Services({ onSelectService }: ServicesProps) {
               {activeModalService.title}
             </h3>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+            <p className="text-neutral-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
               {activeModalService.fullDesc}
             </p>
 
             <div className="mb-6">
-              <h4 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">
+              <h4 className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-3">
                 Key Deliverables & Outcomes
               </h4>
               <div className="space-y-2.5">
                 {activeModalService.deliverables.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 text-sm text-slate-300">
-                    <CheckCircle2 className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <div key={idx} className="flex items-start gap-3 text-sm text-neutral-300">
+                    <CheckCircle2 className="h-4 w-4 text-white shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -305,22 +296,22 @@ export default function Services({ onSelectService }: ServicesProps) {
             </div>
 
             <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-              <div className="text-xs font-mono text-slate-400">
-                Target Metric: <span className="text-cyan-400 font-semibold">{activeModalService.highlightMetric}</span>
+              <div className="text-xs font-mono text-neutral-400">
+                Target: <span className="text-white font-semibold">{activeModalService.highlightMetric}</span>
               </div>
               <button
                 onClick={() => {
                   if (onSelectService) onSelectService(activeModalService);
                   setActiveModalService(null);
                 }}
-                className="px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-950 bg-cyan-400 rounded-full hover:bg-cyan-300 transition-colors"
+                className="px-5 py-2.5 text-xs font-semibold text-black bg-white rounded-full hover:bg-neutral-200 transition-colors"
               >
                 Inquire About Service
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatedModal>
     </section>
   );
 }

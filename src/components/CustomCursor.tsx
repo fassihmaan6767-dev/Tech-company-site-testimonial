@@ -5,7 +5,7 @@ export default function CustomCursor() {
   const dotRef = useRef<HTMLDivElement | null>(null);
   const ringRef = useRef<HTMLDivElement | null>(null);
   const [cursorText, setCursorText] = useState<string>('');
-  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [cursorMode, setCursorMode] = useState<'default' | 'subtle' | 'button' | 'badge'>('default');
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -19,11 +19,11 @@ export default function CustomCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    // Fast GSAP quickSetter/quickTo for lag-free cursor tracking
-    const setDotX = gsap.quickTo(dot, 'x', { duration: 0.1, ease: 'power3' });
-    const setDotY = gsap.quickTo(dot, 'y', { duration: 0.1, ease: 'power3' });
-    const setRingX = gsap.quickTo(ring, 'x', { duration: 0.28, ease: 'power3' });
-    const setRingY = gsap.quickTo(ring, 'y', { duration: 0.28, ease: 'power3' });
+    // Responsive lag-free cursor tracking
+    const setDotX = gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'power3' });
+    const setDotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'power3' });
+    const setRingX = gsap.quickTo(ring, 'x', { duration: 0.22, ease: 'power3' });
+    const setRingY = gsap.quickTo(ring, 'y', { duration: 0.22, ease: 'power3' });
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isVisible) setIsVisible(true);
@@ -45,19 +45,43 @@ export default function CustomCursor() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const interactiveEl = target.closest('a, button, input, textarea, select, [data-cursor]');
-      if (interactiveEl) {
-        setIsHovered(true);
-        const customText = interactiveEl.getAttribute('data-cursor-text');
-        if (customText) {
-          setCursorText(customText);
+      // 1. Navigation bar & header links: keep cursor minimal and subtle
+      const isNav = target.closest('header, nav, [data-cursor="subtle"]');
+      if (isNav) {
+        // If it's a specific button inside header, treat as button, otherwise keep subtle
+        const isHeaderButton = target.closest('header button, nav button');
+        if (isHeaderButton) {
+          setCursorMode('button');
+          setCursorText('');
         } else {
+          setCursorMode('subtle');
           setCursorText('');
         }
-      } else {
-        setIsHovered(false);
-        setCursorText('');
+        return;
       }
+
+      // 2. Element with custom badge text (e.g. project cards)
+      const badgeTarget = target.closest('[data-cursor-text]');
+      if (badgeTarget) {
+        const text = badgeTarget.getAttribute('data-cursor-text');
+        if (text) {
+          setCursorMode('badge');
+          setCursorText(text);
+          return;
+        }
+      }
+
+      // 3. Regular buttons and interactive controls
+      const interactiveEl = target.closest('button, [role="button"], input[type="submit"], input[type="button"]');
+      if (interactiveEl) {
+        setCursorMode('button');
+        setCursorText('');
+        return;
+      }
+
+      // Default state
+      setCursorMode('default');
+      setCursorText('');
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -76,32 +100,34 @@ export default function CustomCursor() {
 
   return (
     <div
-      className={`pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 ${
+      className={`pointer-events-none fixed inset-0 z-50 transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       } hidden md:block`}
       aria-hidden="true"
     >
-      {/* Central pinpoint dot */}
+      {/* Central pinpoint dot - Apple pure white */}
       <div
         ref={dotRef}
-        className={`fixed top-0 left-0 -ml-1 -mt-1 h-2 w-2 rounded-full bg-cyan-400 pointer-events-none transition-transform duration-150 ${
-          isHovered ? 'scale-0' : 'scale-100'
+        className={`fixed top-0 left-0 -ml-1 -mt-1 h-2 w-2 rounded-full bg-white pointer-events-none transition-transform duration-150 ${
+          cursorMode === 'badge' ? 'scale-0' : cursorMode === 'button' ? 'scale-125' : 'scale-100'
         }`}
       />
 
-      {/* Smooth fluid follower ring */}
+      {/* Smooth fluid follower ring - Apple monochromatic styling */}
       <div
         ref={ringRef}
-        className={`fixed top-0 left-0 pointer-events-none flex items-center justify-center rounded-full transition-all duration-300 ease-out ${
-          isHovered
-            ? cursorText
-              ? '-ml-8 -mt-8 h-16 w-16 bg-cyan-500/20 backdrop-blur-xs border border-cyan-400 text-[10px] font-bold text-cyan-200 uppercase tracking-widest'
-              : '-ml-6 -mt-6 h-12 w-12 bg-white/10 backdrop-blur-xs border border-cyan-400/80'
-            : '-ml-4 -mt-4 h-8 w-8 border border-white/30 bg-transparent'
+        className={`fixed top-0 left-0 pointer-events-none flex items-center justify-center rounded-full transition-all duration-200 ease-out ${
+          cursorMode === 'badge'
+            ? '-ml-8 -mt-8 h-16 w-16 bg-white text-black font-semibold text-[10px] tracking-widest uppercase shadow-xl'
+            : cursorMode === 'button'
+            ? '-ml-5 -mt-5 h-10 w-10 border border-white/60 bg-white/10 backdrop-blur-xs scale-105'
+            : cursorMode === 'subtle'
+            ? '-ml-3.5 -mt-3.5 h-7 w-7 border border-white/20 bg-transparent'
+            : '-ml-4 -mt-4 h-8 w-8 border border-white/25 bg-transparent'
         }`}
       >
-        {cursorText && (
-          <span className="animate-in fade-in zoom-in-50 duration-200">
+        {cursorMode === 'badge' && cursorText && (
+          <span className="animate-in fade-in duration-150 font-mono">
             {cursorText}
           </span>
         )}

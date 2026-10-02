@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import gsap from 'gsap';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import { Testimonial } from '../types';
 
@@ -47,105 +48,161 @@ const TESTIMONIALS: Testimonial[] = [
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const cardContentRef = useRef<HTMLDivElement | null>(null);
+  const sliderBoxRef = useRef<HTMLDivElement | null>(null);
+
+  // Drag tracking
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const startXRef = useRef(0);
+  const currentDeltaXRef = useRef(0);
+
+  const transitionToSlide = (nextIndex: number, direction: 'left' | 'right') => {
+    const card = cardContentRef.current;
+    if (!card) {
+      setCurrentIndex(nextIndex);
+      return;
+    }
+
+    const exitX = direction === 'left' ? -60 : 60;
+    const enterX = direction === 'left' ? 60 : -60;
+
+    // Smooth fluid swipe animation
+    gsap.to(card, {
+      x: exitX,
+      opacity: 0,
+      duration: 0.22,
+      ease: 'power2.in',
+      onComplete: () => {
+        setCurrentIndex(nextIndex);
+        gsap.fromTo(
+          card,
+          { x: enterX, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.35, ease: 'power3.out' }
+        );
+      },
+    });
+  };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+    const next = (currentIndex + 1) % TESTIMONIALS.length;
+    transitionToSlide(next, 'left');
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+    const prev = (currentIndex - 1 + TESTIMONIALS.length) % TESTIMONIALS.length;
+    transitionToSlide(prev, 'right');
   };
 
-  // Mouse / Touch drag handlers
+  // Drag interaction with real-time feedback
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     setIsDragging(true);
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setStartX(clientX);
+    startXRef.current = clientX;
+    currentDeltaXRef.current = 0;
   };
 
-  const handleTouchEnd = (e: React.TouchEvent | React.MouseEvent) => {
+  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isDragging || !cardContentRef.current) return;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const delta = clientX - startXRef.current;
+    currentDeltaXRef.current = delta;
+
+    // Real-time card tilt and translation during drag
+    gsap.set(cardContentRef.current, {
+      x: delta * 0.4,
+      rotation: (delta / 400) * 2,
+    });
+  };
+
+  const handleTouchEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : (e as React.MouseEvent).clientX;
-    const diff = clientX - startX;
 
-    if (diff > 50) {
-      handlePrev();
-    } else if (diff < -50) {
-      handleNext();
+    const delta = currentDeltaXRef.current;
+    const card = cardContentRef.current;
+
+    if (Math.abs(delta) > 55) {
+      if (delta > 0) {
+        handlePrev();
+      } else {
+        handleNext();
+      }
+    } else if (card) {
+      // Elastic spring back to center if swipe threshold wasn't met
+      gsap.to(card, {
+        x: 0,
+        rotation: 0,
+        duration: 0.45,
+        ease: 'elastic.out(1, 0.4)',
+      });
     }
   };
 
-  // Auto-advance every 8 seconds if not interacting
   useEffect(() => {
     const timer = setInterval(() => {
       handleNext();
-    }, 8000);
+    }, 9000);
     return () => clearInterval(timer);
   }, [currentIndex]);
 
   const activeTestimonial = TESTIMONIALS[currentIndex];
 
   return (
-    <section id="reviews" className="relative py-28 px-6 md:px-12 max-w-7xl mx-auto">
+    <section id="reviews" className="relative py-28 px-6 md:px-12 max-w-6xl mx-auto">
       {/* Section Header */}
-      <div className="max-w-3xl mb-16">
-        <div className="text-xs font-mono uppercase tracking-widest text-cyan-400 mb-3">
+      <div className="max-w-2xl mb-16">
+        <div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-3">
           Client Endorsements
         </div>
-        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
           Trusted by Industry Leaders and Hypergrowth Founders.
         </h2>
-        <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed">
+        <p className="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
           Every partnership is measured by tangible metrics: revenue uplift, engagement velocity, and technical excellence.
         </p>
       </div>
 
-      {/* Draggable Slider Container */}
+      {/* Draggable Slider Container - Apple Style with Fluid Physics */}
       <div
-        ref={sliderRef}
+        ref={sliderBoxRef}
         onMouseDown={handleTouchStart}
+        onMouseMove={handleTouchMove}
         onMouseUp={handleTouchEnd}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative bg-[#0d0d14] border border-white/10 rounded-3xl p-8 sm:p-14 overflow-hidden select-none cursor-grab active:cursor-grabbing transition-all duration-300 hover:border-cyan-500/40"
+        className="relative bg-neutral-900/40 border border-white/[0.08] rounded-3xl p-8 sm:p-14 overflow-hidden select-none cursor-grab active:cursor-grabbing transition-colors duration-300 hover:border-white/20"
       >
-        {/* Background Ambient Glow */}
-        <div className="absolute right-0 top-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col justify-between min-h-[300px]">
-          {/* Top Row: Quote Icon & Rating & Metric Tag */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-1 text-amber-400">
+        <div ref={cardContentRef} className="relative z-10 flex flex-col justify-between min-h-[280px]">
+          {/* Top Row: Stars and Outcome Metric */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pointer-events-none">
+            <div className="flex items-center gap-1 text-white">
               {[...Array(activeTestimonial.rating)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-amber-400" />
+                <Star key={i} className="h-4 w-4 fill-white text-white" />
               ))}
             </div>
 
-            <div className="font-mono text-xs text-cyan-400 bg-cyan-950/50 border border-cyan-500/30 px-3 py-1 rounded-full">
+            <div className="font-mono text-xs text-neutral-300 bg-white/[0.06] border border-white/10 px-3 py-1 rounded-full">
               {activeTestimonial.verifiedOutcome}
             </div>
           </div>
 
           {/* Quote Body */}
-          <div className="relative mb-10">
+          <div className="relative mb-10 pointer-events-none">
             <Quote className="absolute -top-3 -left-4 sm:-left-6 h-8 w-8 text-white/10 pointer-events-none" />
-            <p className="font-display text-lg sm:text-2xl md:text-3xl text-slate-100 font-normal leading-relaxed">
+            <p className="font-display text-lg sm:text-2xl md:text-3xl text-neutral-100 font-normal leading-relaxed">
               "{activeTestimonial.quote}"
             </p>
           </div>
 
           {/* Author Details & Slider Navigation */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-6 border-t border-white/[0.06]">
             <div>
               <div className="font-display text-lg font-bold text-white">
                 {activeTestimonial.clientName}
               </div>
-              <div className="text-xs text-slate-400 font-mono mt-1">
-                {activeTestimonial.role} · <span className="text-cyan-400">{activeTestimonial.company}</span>
+              <div className="text-xs text-neutral-400 font-mono mt-0.5">
+                {activeTestimonial.role} · <span className="text-white">{activeTestimonial.company}</span>
               </div>
             </div>
 
@@ -155,9 +212,12 @@ export default function Testimonials() {
                 {TESTIMONIALS.map((_, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentIndex ? 'w-8 bg-cyan-400' : 'w-2 bg-white/20 hover:bg-white/40'
+                    onClick={() => {
+                      const dir = idx > currentIndex ? 'left' : 'right';
+                      transitionToSlide(idx, dir);
+                    }}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === currentIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/20 hover:bg-white/40'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
@@ -167,14 +227,14 @@ export default function Testimonials() {
               <div className="flex items-center gap-2 ml-4">
                 <button
                   onClick={handlePrev}
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2.5 rounded-full bg-white/[0.06] border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors"
                   aria-label="Previous testimonial"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2.5 rounded-full bg-white/[0.06] border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors"
                   aria-label="Next testimonial"
                 >
                   <ChevronRight className="h-4 w-4" />

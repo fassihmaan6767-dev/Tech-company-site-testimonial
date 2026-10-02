@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Search, Palette, Terminal, Rocket } from 'lucide-react';
+import { Search, Palette, Terminal, Rocket, CheckCircle2 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +12,7 @@ const PROCESS_STEPS = [
     subtitle: 'Aligning business metrics with technical requirements',
     description:
       'We deconstruct your market positioning, conversion bottlenecks, and technical requirements. We define user flows, design tokens, and select the optimal modern stack to ensure long-term scalability.',
-    deliverables: ['Conversion Architecture Blueprint', 'Tech Stack Evaluation', 'Competitive Spatial Audit'],
+    deliverables: ['Architecture Blueprint', 'Tech Stack Evaluation', 'Competitive Spatial Audit'],
     duration: 'Week 1–2',
     icon: Search,
   },
@@ -32,7 +32,7 @@ const PROCESS_STEPS = [
     subtitle: 'Zero-compromise full-stack code implementation',
     description:
       'We bring designs to life using modern React, TypeScript, GSAP, and Tailwind. We implement butter-smooth Lenis scrolling, compositor-only animations, and resilient state architecture.',
-    deliverables: ['Production React/Next.js Codebase', 'GSAP & ScrollTrigger Choreography', 'API & Database Integration'],
+    deliverables: ['Production React Codebase', 'GSAP & ScrollTrigger Choreography', 'API & Edge Architecture'],
     duration: 'Week 5–7',
     icon: Terminal,
   },
@@ -60,7 +60,7 @@ export default function Process() {
     if (!section || !lineProgress || !stepCards) return;
 
     const ctx = gsap.context(() => {
-      // 1. Scroll-driven vertical line progress that "draws" downwards
+      // 1. Scroll-driven vertical line progress that draws downward
       gsap.fromTo(
         lineProgress,
         { scaleY: 0 },
@@ -71,15 +71,16 @@ export default function Process() {
             trigger: stepsContainerRef.current,
             start: 'top 70%',
             end: 'bottom 80%',
-            scrub: 0.5,
+            scrub: 0.4,
           },
         }
       );
 
-      // 2. Illuminate each milestone node as it enters viewport
+      // 2. Illuminate each milestone node & card as line reaches it
       stepCards.forEach((card) => {
         const nodeDot = card.querySelector('.node-dot');
-        const nodeContent = card.querySelector('.node-content');
+        const nodeInner = card.querySelector('.node-inner');
+        const cardBox = card.querySelector('.node-card-box');
 
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -90,22 +91,31 @@ export default function Process() {
         });
 
         tl.to(nodeDot, {
-          backgroundColor: '#06b6d4',
-          borderColor: '#a5f3fc',
-          boxShadow: '0 0 25px rgba(6,182,212,0.8)',
-          scale: 1.25,
-          duration: 0.4,
+          borderColor: '#ffffff',
+          backgroundColor: '#18181b',
+          boxShadow: '0 0 25px rgba(255, 255, 255, 0.45)',
+          scale: 1.15,
+          duration: 0.35,
           ease: 'power2.out',
-        }).from(
-          nodeContent,
-          {
-            x: 40,
-            opacity: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-          },
-          '-=0.3'
-        );
+        })
+          .to(
+            nodeInner,
+            {
+              backgroundColor: '#ffffff',
+              duration: 0.25,
+            },
+            '-=0.3'
+          )
+          .to(
+            cardBox,
+            {
+              borderColor: 'rgba(255, 255, 255, 0.35)',
+              backgroundColor: 'rgba(24, 24, 27, 0.65)',
+              duration: 0.4,
+              ease: 'power2.out',
+            },
+            '-=0.25'
+          );
       });
     }, section);
 
@@ -116,62 +126,66 @@ export default function Process() {
     <section
       id="process"
       ref={sectionRef}
-      className="relative py-28 px-6 md:px-12 max-w-7xl mx-auto"
+      className="relative py-28 px-6 md:px-12 max-w-6xl mx-auto"
     >
       {/* Section Header */}
-      <div className="max-w-3xl mb-20">
-        <div className="text-xs font-mono uppercase tracking-widest text-cyan-400 mb-3">
+      <div className="max-w-2xl mb-20">
+        <div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-3">
           Predictable Execution
         </div>
-        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+        <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
           Our Four-Stage Engineering Process.
         </h2>
-        <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed">
-          From first concept to global CDN distribution, our systematic workflow guarantees absolute transparency, zero scope creep, and uncompromising quality.
+        <p className="text-neutral-400 text-sm sm:text-base font-light leading-relaxed">
+          From first discovery sprint to global CDN deployment, our workflow eliminates guesswork through weekly milestones, live staging URLs, and zero scope ambiguity.
         </p>
       </div>
 
-      {/* Vertical Timeline Container */}
-      <div ref={stepsContainerRef} className="relative max-w-4xl mx-auto pl-6 sm:pl-10 md:pl-12">
-        {/* Background Guide Line */}
-        <div className="absolute left-[13px] sm:left-[21px] md:left-[25px] top-6 bottom-6 w-[2px] bg-white/10" />
-
-        {/* Dynamic Animated Scroll Line that draws itself down */}
+      {/* Vertical Timeline Container - Mathematically Centered */}
+      <div ref={stepsContainerRef} className="relative max-w-4xl mx-auto">
+        {/* Background Guide Line: Positioned at 19px (dead center of 40px rail) */}
         <div
-          ref={lineProgressRef}
-          className="absolute left-[13px] sm:left-[21px] md:left-[25px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-cyan-400 via-sky-400 to-violet-500 origin-top"
-          style={{ transform: 'scaleY(0)' }}
+          className="absolute left-[19px] top-6 bottom-10 w-[2px] bg-white/[0.08] pointer-events-none"
+          aria-hidden="true"
         />
 
-        {/* Steps */}
-        <div className="space-y-16 sm:space-y-20">
-          {PROCESS_STEPS.map((step, idx) => {
+        {/* Dynamic Animated Scroll Line: Exactly at 19px, draws down through dot centers */}
+        <div
+          ref={lineProgressRef}
+          className="absolute left-[19px] top-6 bottom-10 w-[2px] bg-white origin-top pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+          style={{ transform: 'scaleY(0)' }}
+          aria-hidden="true"
+        />
+
+        {/* Steps List - Always visible and prominently styled */}
+        <div className="space-y-10 sm:space-y-14">
+          {PROCESS_STEPS.map((step) => {
             const Icon = step.icon;
             return (
               <div
                 key={step.step}
-                className="process-item relative flex items-start gap-6 sm:gap-10"
+                className="process-item relative flex items-start gap-4 sm:gap-8"
               >
-                {/* Milestone Node on the timeline */}
-                <div className="relative -ml-[19px] sm:-ml-[27px] md:-ml-[31px] z-10 shrink-0">
-                  <div className="node-dot h-8 w-8 rounded-full border-2 border-white/20 bg-[#0e0e14] flex items-center justify-center transition-all duration-300">
-                    <div className="h-2 w-2 rounded-full bg-slate-400" />
+                {/* Milestone Node on the timeline: 40px wide rail with center alignment */}
+                <div className="w-10 shrink-0 flex justify-center pt-5 z-10">
+                  <div className="node-dot h-7 w-7 rounded-full border border-white/20 bg-[#0a0a0c] flex items-center justify-center transition-all duration-300">
+                    <div className="node-inner h-2 w-2 rounded-full bg-neutral-600 transition-colors" />
                   </div>
                 </div>
 
-                {/* Node Card Content */}
-                <div className="node-content flex-1 p-6 sm:p-8 rounded-2xl bg-[#0e0e14] border border-white/10 hover:border-cyan-500/30 transition-colors duration-200">
+                {/* Node Card Content - Always 100% visible, smoothly highlights on reach */}
+                <div className="node-card-box flex-1 p-6 sm:p-8 rounded-2xl bg-neutral-900/50 border border-white/[0.08] transition-all duration-300 hover:border-white/30">
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-white/5 text-cyan-400">
-                        <Icon className="h-5 w-5" />
+                      <div className="p-2 rounded-lg bg-white/[0.06] text-white">
+                        <Icon className="h-4 w-4" />
                       </div>
-                      <span className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
+                      <span className="font-mono text-xs font-semibold uppercase tracking-wider text-white">
                         Stage {step.step}
                       </span>
                     </div>
 
-                    <span className="font-mono text-xs text-slate-500 border border-white/10 px-3 py-1 rounded-full">
+                    <span className="font-mono text-xs text-neutral-400 border border-white/10 px-3 py-1 rounded-full bg-black/40">
                       {step.duration}
                     </span>
                   </div>
@@ -179,19 +193,20 @@ export default function Process() {
                   <h3 className="font-display text-xl sm:text-2xl font-bold text-white mb-2">
                     {step.title}
                   </h3>
-                  <div className="text-xs text-slate-400 font-mono mb-4">{step.subtitle}</div>
+                  <div className="text-xs text-neutral-400 font-mono mb-4">{step.subtitle}</div>
 
-                  <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light mb-6">
+                  <p className="text-neutral-300 text-sm sm:text-base leading-relaxed font-light mb-6">
                     {step.description}
                   </p>
 
                   {/* Deliverables Unboxed Metadata */}
-                  <div className="pt-4 border-t border-white/5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-400">
-                    <span className="font-mono uppercase text-slate-500 text-[10px]">Deliverables:</span>
+                  <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400">
+                    <span className="font-mono uppercase text-neutral-500 text-[10px]">Deliverables:</span>
                     {step.deliverables.map((del, dIdx) => (
-                      <span key={dIdx} className="flex items-center gap-2">
-                        <span className="text-slate-300 font-medium">{del}</span>
-                        {dIdx < step.deliverables.length - 1 && <span className="text-slate-600">·</span>}
+                      <span key={dIdx} className="flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3 w-3 text-neutral-400" />
+                        <span className="text-neutral-200 font-medium">{del}</span>
+                        {dIdx < step.deliverables.length - 1 && <span className="text-neutral-600 ml-1">·</span>}
                       </span>
                     ))}
                   </div>
